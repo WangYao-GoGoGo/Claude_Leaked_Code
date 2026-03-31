@@ -1,90 +1,57 @@
-# Claude_Leaked_Code
+<div align="center">
 
-## Overview
+# Claude Code — Leaked Source
 
-This repository is an archived copy of source files that were publicly exposed through an npm sourcemap incident involving Claude Code on March 31, 2026.
+**Archived source tree exposed through a sourcemap-related npm publishing incident on March 31, 2026**
 
-It is kept here for research, documentation, and software supply-chain security discussion purposes only.
+[![TypeScript](https://img.shields.io/badge/TypeScript-512K%2B_lines-3178C6?logo=typescript&logoColor=white)](#tech-stack)
+[![Bun](https://img.shields.io/badge/Runtime-Bun-f472b6?logo=bun&logoColor=white)](#tech-stack)
+[![React + Ink](https://img.shields.io/badge/UI-React_%2B_Ink-61DAFB?logo=react&logoColor=black)](#tech-stack)
+[![Files](https://img.shields.io/badge/~1,900_files-source_only-grey)](#directory-structure)
+[![MCP Server](https://img.shields.io/badge/MCP-Explorer_Server-blueviolet)](#-explore-with-mcp-server)
+[![npm](https://img.shields.io/npm/v/claude-code-explorer-mcp?label=npm&color=cb3837&logo=npm)](https://www.npmjs.com/package/claude-code-explorer-mcp)
 
-## Purpose
+> The original unmodified leaked source is preserved in the [`backup` branch](https://github.com/nirholas/claude-code/tree/backup).
 
-This repository is intended to support:
+</div>
 
-- security analysis of accidental source exposure through sourcemaps
-- research on software packaging and release engineering risks
-- documentation of a real-world case of build artifact leakage
-- educational discussion about secure publishing practices
+---
 
-## Important Notice
+## Table of Contents
 
-- This repository does **not** claim ownership of the original code.
-- The original code belongs to its respective rights holder.
-- This archive is provided strictly for **research, archival, and educational reference**.
-- If you are the rights holder and would like this repository removed or modified, please open an issue or contact me.
+- [How It Leaked](#how-it-leaked)
+- [What Is Claude Code?](#what-is-claude-code)
+- [Why This Repository Exists](#why-this-repository-exists)
+- [Documentation](#documentation)
+- [Explore with MCP Server](#explore-with-mcp-server)
+- [Directory Structure](#directory-structure)
+- [Architecture](#architecture)
+  - [1. Tool System](#1-tool-system)
+  - [2. Command System](#2-command-system)
+  - [3. Service Layer](#3-service-layer)
+  - [4. Bridge System](#4-bridge-system)
+  - [5. Permission System](#5-permission-system)
+  - [6. Feature Flags](#6-feature-flags)
+- [Key Files](#key-files)
+- [Tech Stack](#tech-stack)
+- [Design Patterns](#design-patterns)
+- [Contributing](#contributing)
+- [Disclaimer](#disclaimer)
 
-## Background
+---
 
-The incident discussed here involves a published package that appears to have included a source map file containing original source content. Source maps can embed full source code inside the `sourcesContent` field, which may unintentionally expose internal implementation details if they are shipped in production artifacts.
+## How It Leaked
 
-This repository exists as a case study in:
+Claude Code's published npm package was found to include a `.map` file that referenced the original TypeScript source.
 
-- why production packages should be checked for `.map` files
-- why release pipelines need explicit artifact filtering
-- how debugging metadata can unintentionally leak sensitive internals
+In JavaScript/TypeScript build pipelines, source maps are generated to map bundled code back to the original source for debugging. A source map may contain a `sourcesContent` field, which can embed the full original contents of source files directly inside the `.map` artifact.
 
-## Repository Contents
+A simplified structure looks like this:
 
-This repository contains archived source files and directory structure associated with the exposed package contents.
-
-Examples of included modules/directories:
-
-- `assistant/`
-- `bridge/`
-- `buddy/`
-- `coordinator/`
-- `services/`
-- `tools/`
-- `upstreamproxy/`
-- `utils/`
-
-## Why This Matters
-
-This case is useful because it highlights a broader engineering issue rather than a single product-specific mistake:
-
-1. sourcemaps may contain far more than stack-trace metadata
-2. package publishing pipelines often leak files unintentionally
-3. secure release engineering requires artifact review before publish
-4. AI tooling products are also subject to ordinary software supply-chain risks
-
-## Ethical Use
-
-Please do **not** use this repository for harassment, abuse, unauthorized redistribution, or harmful exploitation.
-
-Recommended use cases:
-
-- academic/security discussion
-- reproducible documentation of the incident
-- defensive analysis of packaging mistakes
-- learning how to prevent similar leaks in your own projects
-
-## Takedown / Rights Holder Requests
-
-If you are the copyright owner or an authorized representative and believe this content should not remain available, please contact me and I will handle the request promptly.
-
-## Disclaimer
-
-All trademarks, product names, and source code rights belong to their respective owners.
-This repository is provided without warranty of any kind.
-
-## Related Topic
-
-This repository may also be useful for discussions around:
-
-- npm package hygiene
-- sourcemap handling in production builds
-- build system defaults
-- secure software release workflows
-
-## Current Status
-
-This repository is maintained as an archive/reference snapshot.
+```json
+{
+  "version": 3,
+  "sources": ["../src/main.tsx", "../src/tools/BashTool.ts"],
+  "sourcesContent": ["// original source code...", "..."],
+  "mappings": "AAAA,..."
+}
